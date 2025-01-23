@@ -16,7 +16,7 @@ func NewAuthMiddleware() *AuthMiddleware {
 
 func (a AuthMiddleware) Auth(c *gin.Context) {
 	authorization := c.Request.Header.Get("Authorization")
-	if len(authorization) < 7 {
+	if len(authorization) {{ "<" | Safe }} 7 {
 		c.JSON(http.StatusForbidden, gin.H{
 			"code": 403,
 			"msg":  "唔好搞嘢",

@@ -1,7 +1,7 @@
 package log
 
 import (
-	"passport/internal/contract"
+	"{{ .ProjectName }}/internal/contract"
 
 	"github.com/rs/zerolog"
 )
