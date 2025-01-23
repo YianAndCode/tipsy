@@ -11,7 +11,7 @@ var rootCmd = &cobra.Command{
 	Short: "Tipsy is a CLI tool for Go gin projects",
 	Long: `Tipsy is a command line interface that helps you work with the gin framework.
 	It can create new gin projects and generate various components like entities,
-	controllers, middlewares, and services.`,
+	repositories, controllers, middlewares, and services.`,
 }
 
 func init() {
