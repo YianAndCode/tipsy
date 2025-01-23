@@ -1,0 +1,1 @@
+TIPSY_PROJECT_NAME={{ .ProjectName }}
