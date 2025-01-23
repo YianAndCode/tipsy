@@ -26,6 +26,9 @@ var funcMap = template.FuncMap{
 	"ToUpperCase": strings.ToUpper,
 	"Title":       strings.Title,
 	"TrimSpace":   strings.TrimSpace,
+	"Safe": func(s string) template.HTML {
+		return template.HTML(s)
+	},
 }
 
 // Engine 是模板引擎的核心结构
@@ -89,4 +92,9 @@ func (e *Engine) Execute(templateName string, data interface{}) (string, error) 
 	}
 
 	return buf.String(), nil
+}
+
+// GetTemplates 返回所有已加载的模板
+func (e *Engine) GetTemplates() map[string]*template.Template {
+	return e.templates
 }
