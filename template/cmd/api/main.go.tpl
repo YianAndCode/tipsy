@@ -59,7 +59,7 @@ func main() {
 	}
 
 	select {
-	case <-ctx.Done():
+	case {{ "<" | Safe }}-ctx.Done():
 		logger.Info("timeout of 5 seconds.")
 	}
 	logger.Info("Server exiting")
