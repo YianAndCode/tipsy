@@ -7,7 +7,7 @@ type UserLoginRequest struct {
 }
 
 type UserLoginResponse struct {
-	Nickname string `json"nickname"`
+	Nickname string `json:"nickname"`
 	Token    string `json:"token"`
 }
 
@@ -19,6 +19,6 @@ type UserRegisterRequest struct {
 }
 
 type UserRegisterResponse struct {
-	Nickname string `json"nickname"`
+	Nickname string `json:"nickname"`
 	Token    string `json:"token"`
 }
