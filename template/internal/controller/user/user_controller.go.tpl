@@ -26,8 +26,8 @@ func (c UserController) Login(ctx *gin.Context) (any, error) {
 	return c.login(ctx)
 }
 
-func (c UserController) login(ctx *gin.Context) (*dto.LoginResponse, error) {
-	var req dto.LoginReqeust
+func (c UserController) login(ctx *gin.Context) (*dto.UserLoginResponse, error) {
+	var req dto.UserLoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return nil, apperr.New(errcode.InvalidParam)
 	}
@@ -37,7 +37,7 @@ func (c UserController) login(ctx *gin.Context) (*dto.LoginResponse, error) {
 		return nil, err
 	}
 
-	return &dto.LoginResponse{
+	return &dto.UserLoginResponse{
 		Nickname: user.Nickname,
 	}, nil
 }
@@ -47,8 +47,8 @@ func (c UserController) Register(ctx *gin.Context) (any, error) {
 	return c.register(ctx)
 }
 
-func (c UserController) register(ctx *gin.Context) (*dto.RegisterResponse, error) {
-	var req dto.RegisterRequest
+func (c UserController) register(ctx *gin.Context) (*dto.UserRegisterResponse, error) {
+	var req dto.UserRegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return nil, apperr.New(errcode.InvalidParam)
 	}
@@ -58,7 +58,7 @@ func (c UserController) register(ctx *gin.Context) (*dto.RegisterResponse, error
 		return nil, err
 	}
 
-	return &dto.RegisterResponse{
+	return &dto.UserRegisterResponse{
 		Nickname: user.Nickname,
 	}, nil
 }
