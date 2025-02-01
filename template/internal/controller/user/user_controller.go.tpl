@@ -38,7 +38,6 @@ func (c UserController) login(ctx *gin.Context) (*dto.LoginResponse, error) {
 	}
 
 	return &dto.LoginResponse{
-		UserId:   user.UserId,
 		Nickname: user.Nickname,
 	}, nil
 }
@@ -60,7 +59,6 @@ func (c UserController) register(ctx *gin.Context) (*dto.RegisterResponse, error
 	}
 
 	return &dto.RegisterResponse{
-		UserId:   user.UserId,
 		Nickname: user.Nickname,
 	}, nil
 }
