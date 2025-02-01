@@ -104,7 +104,7 @@ func NewCreateCommand() *cobra.Command {
 				fmt.Printf("Generated file: %s\n", targetPath)
 			}
 
-			fmt.Printf("\nProject %s created successfully!\nDon't forget to exec: cd %s && go mod tidy\n", projectName, projectName)
+			fmt.Printf("\nProject %s created successfully!\nDon't forget to exec: \tcd %s && go mod tidy\n\tcd cmd/api && wire\n", projectName, projectName)
 		},
 	}
 }
