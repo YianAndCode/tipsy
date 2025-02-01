@@ -49,7 +49,7 @@ func main() {
 		quit,
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1, syscall.SIGUSR2,
 	)
-	<-quit
+	{{ "<" | Safe }}-quit
 	logger.Info("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
