@@ -4,14 +4,14 @@ import (
 	"{{ .ProjectName }}/internal/contract"
 	"{{ .ProjectName }}/internal/controller"
 	"{{ .ProjectName }}/internal/controller/user"
-	"{{ .ProjectName }}/internal/middleware"
+	"{{ .ProjectName }}/internal/middleware/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 type APIRouter struct {
-	log                  contract.Logger
-	userController       *user.UserController
+	log            contract.Logger
+	userController *user.UserController
 }
 
 func NewAPIRouter(
@@ -35,7 +35,7 @@ func (a *APIRouter) RegisterUnauthorizedAPIRouter(r *gin.Engine) {
 }
 
 // 注册需要登录的路由
-func (a *APIRouter) RegisterAuthorizedAPIRouter(r *gin.Engine, authMiddleware *middleware.AuthMiddleware) {
+func (a *APIRouter) RegisterAuthorizedAPIRouter(r *gin.Engine, authMiddleware *auth.AuthMiddleware) {
 	authorized := r.Group("")
 	authorized.Use(authMiddleware.Auth)
 	// TODO
