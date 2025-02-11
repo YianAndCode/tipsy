@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	tplEng "github.com/YianAndCode/tipsy/internal/template"
+	"github.com/YianAndCode/tipsy/internal/utils"
 	tplFs "github.com/YianAndCode/tipsy/template"
 
 	"github.com/spf13/cobra"
@@ -138,15 +139,15 @@ func NewCommand() *cobra.Command {
 				var targetPath string
 				switch componentType {
 				case "entity":
-					targetPath = filepath.Join(cwd, "internal", "entity", strings.ToLower(componentName)+".go")
+					targetPath = filepath.Join(cwd, "internal", "entity", utils.ToSnakeCase(componentName)+".go")
 				case "repo":
-					targetPath = filepath.Join(cwd, "internal", "repo", strings.ToLower(componentName), strings.ToLower(componentName)+"_repo.go")
+					targetPath = filepath.Join(cwd, "internal", "repo", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_repo.go")
 				case "controller":
-					targetPath = filepath.Join(cwd, "internal", "controller", strings.ToLower(componentName), strings.ToLower(componentName)+"_controller.go")
+					targetPath = filepath.Join(cwd, "internal", "controller", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_controller.go")
 				case "middleware":
-					targetPath = filepath.Join(cwd, "internal", "middleware", strings.ToLower(componentName), strings.ToLower(componentName)+"_middleware.go")
+					targetPath = filepath.Join(cwd, "internal", "middleware", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_middleware.go")
 				case "service":
-					targetPath = filepath.Join(cwd, "internal", "service", strings.ToLower(componentName), strings.ToLower(componentName)+"_service.go")
+					targetPath = filepath.Join(cwd, "internal", "service", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_service.go")
 				}
 
 				// 检查文件是否已存在

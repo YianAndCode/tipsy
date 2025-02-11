@@ -7,21 +7,13 @@ import (
 	"html/template"
 	"path/filepath"
 	"strings"
-	"unicode"
+
+	"github.com/YianAndCode/tipsy/internal/utils"
 )
 
 // 辅助函数映射
 var funcMap = template.FuncMap{
-	"ToSnakeCase": func(s string) string {
-		var result []rune
-		for i, r := range s {
-			if i > 0 && r >= 'A' && r <= 'Z' {
-				result = append(result, '_')
-			}
-			result = append(result, unicode.ToLower(r))
-		}
-		return string(result)
-	},
+	"ToSnakeCase": utils.ToSnakeCase,
 	"ToLowerCase": strings.ToLower,
 	"ToUpperCase": strings.ToUpper,
 	"Title":       strings.Title,
