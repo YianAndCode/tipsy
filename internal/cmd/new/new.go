@@ -19,9 +19,10 @@ func NewCommand() *cobra.Command {
 		Use:   "new [type] [name]",
 		Short: "Create a new component",
 		Long: `Create a new component for your Gin project.
-	Supported types: entity, controller, middleware, service
+	Supported types: entity, repo, controller, middleware, service
 	For example:
 	  tipsy new entity User
+	  tipsy new repo User
 	  tipsy new controller UserController
 	  tipsy new middleware Auth
 	  tipsy new service UserService`,
@@ -45,6 +46,8 @@ func NewCommand() *cobra.Command {
 			// 它们都有一个共同的参数 ProjectName，通过读取 $(pwd)/.tipsy.env 中的 TIPSY_PROJECT_NAME 变量获取
 			// repo/controller/middleware/service 都需要生成 provider，即在 internal/{component}/provider.go 文件中注册组件，
 			// 需要增加 import 项和在 wire.NewSet() 的最后一个参数追加 New 函数
+			//
+			// controller 需要在 internal/controller/dto/ 下新增一个 {name}.go 文件
 
 			// 验证组件类型是否合法
 			validTypes := map[string]bool{
@@ -234,6 +237,35 @@ func NewCommand() *cobra.Command {
 					// 写入更新后的 provider.go
 					if err := os.WriteFile(providerPath, []byte(strings.Join(lines, "\n")), 0644); err != nil {
 						fmt.Printf("Error updating provider file: %v\n", err)
+					}
+				}
+
+				// 新增 dto
+				if componentType == "controller" {
+					dtoPath := filepath.Join(cwd, "internal", "controller", "dto", fmt.Sprintf("%s.go", componentName))
+					// 检查文件是否已存在
+					if _, err := os.Stat(dtoPath); err == nil {
+						fmt.Printf("Error: %s already exists\n", dtoPath)
+						return
+					} else if !os.IsNotExist(err) {
+						fmt.Printf("Error checking file %s: %v\n", dtoPath, err)
+						return
+					}
+					// 创建目标文件所在的目录
+					targetDir := filepath.Dir(dtoPath)
+					if err := os.MkdirAll(targetDir, 0755); err != nil {
+						fmt.Printf("Error creating directory for %s: %v\n", dtoPath, err)
+						continue
+					}
+					result, err := tpl.Execute("internal/controller/dto/base.tpl", data)
+					if err != nil {
+						fmt.Printf("Error executing template %s: %v\n", "internal/controller/dto/base.tpl", err)
+						continue
+					}
+					// 写入文件
+					if err := os.WriteFile(dtoPath, []byte(result), 0644); err != nil {
+						fmt.Printf("Error writing file %s: %v\n", dtoPath, err)
+						continue
 					}
 				}
 			}
