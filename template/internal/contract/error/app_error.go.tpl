@@ -17,7 +17,7 @@ func (a AppError) Error() string {
 	return a.ErrMsg
 }
 
-func (a AppError) Unwarp() error {
+func (a AppError) Unwrap() error {
 	return a.Err
 }
 

@@ -16,12 +16,12 @@ func Controller(log contract.Logger, controllerFunc ControllerFunc) func(*gin.Co
 	return func(ctx *gin.Context) {
 		resp, err := controllerFunc(ctx)
 		if err != nil {
-			var appErr apperr.AppError
+			var appErr *apperr.AppError
 			errCode := 0
 			errMsg := ""
 			if errors.As(err, &appErr) {
 				errCode = appErr.Code
-				errMsg = appErr.ErrMsg
+				errMsg = appErr.Msg
 			} else {
 				errCode = errcode.Other
 				errMsg = "Something wrong happened"
