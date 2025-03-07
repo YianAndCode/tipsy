@@ -225,7 +225,7 @@ func NewCommand() *cobra.Command {
 							for j := i + 1; j < len(lines); j++ {
 								if strings.Contains(lines[j], ")") {
 									// 在最后一个参数后添加新组件
-									newProvider := fmt.Sprintf("\t%s.New%s%s,", strings.ToLower(componentName), componentName, firtstLetterUpper(componentType))
+									newProvider := fmt.Sprintf("\t%s.New%s%s,", utils.ToSnakeCase(componentName), componentName, firtstLetterUpper(componentType))
 									lines = append(lines[:j], append([]string{newProvider}, lines[j:]...)...)
 									break
 								}

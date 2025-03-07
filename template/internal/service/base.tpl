@@ -1,4 +1,4 @@
-package {{ .ServiceName | ToLowerCase }}
+package {{ .ServiceName | ToSnakeCase }}
 
 type {{ .ServiceName }}Service struct {
 }

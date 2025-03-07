@@ -1,4 +1,4 @@
-package {{ .MiddlewareName | ToLowerCase }}
+package {{ .MiddlewareName | ToSnakeCase }}
 
 import "github.com/gin-gonic/gin"
 

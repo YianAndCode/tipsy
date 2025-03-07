@@ -1,4 +1,4 @@
-package {{ .ControllerName | ToLowerCase }}
+package {{ .ControllerName | ToSnakeCase }}
 
 import (
 	"{{ .ProjectName }}/internal/contract/constant/errcode"

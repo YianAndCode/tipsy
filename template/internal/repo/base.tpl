@@ -1,4 +1,4 @@
-package {{ .RepoName | ToLowerCase }}
+package {{ .RepoName | ToSnakeCase }}
 
 type {{ .RepoName }}Repo struct {
 }
