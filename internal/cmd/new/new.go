@@ -196,7 +196,7 @@ func NewCommand() *cobra.Command {
 					lines := strings.Split(string(providerContent), "\n")
 
 					// 在 import 块中添加新组件的导入
-					importPath := fmt.Sprintf("\t\"%s/internal/%s/%s\"\n", projectName, componentType, strings.ToLower(componentName))
+					importPath := fmt.Sprintf("\t\"%s/internal/%s/%s\"\n", projectName, componentType, utils.ToSnakeCase(componentName))
 					importAdded := false
 					for i, line := range lines {
 						if strings.Contains(line, "import (") {
