@@ -103,7 +103,7 @@ func NewCommand() *cobra.Command {
 			// 根据组件类型查找对应的模板
 			var matchedTemplates []string
 			for tplPath := range templates {
-				if strings.Contains(tplPath, fmt.Sprintf("internal/%s", componentType)) {
+				if strings.Contains(tplPath, fmt.Sprintf("internal/%s/base.tpl", componentType)) {
 					matchedTemplates = append(matchedTemplates, tplPath)
 				}
 			}
@@ -242,7 +242,7 @@ func NewCommand() *cobra.Command {
 
 				// 新增 dto
 				if componentType == "controller" {
-					dtoPath := filepath.Join(cwd, "internal", "controller", "dto", fmt.Sprintf("%s.go", componentName))
+					dtoPath := filepath.Join(cwd, "internal", "controller", "dto", fmt.Sprintf("%s.go", utils.ToSnakeCase(componentName)))
 					// 检查文件是否已存在
 					if _, err := os.Stat(dtoPath); err == nil {
 						fmt.Printf("Error: %s already exists\n", dtoPath)
