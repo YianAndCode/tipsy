@@ -38,6 +38,7 @@ func DoTransaction(ctx context.Context, fn func(ctx context.Context) error) erro
 	c := context.WithValue(ctx, constant.CtxKey_DbTx, session.Engine())
 	err := fn(c)
 	if err != nil {
+		session.Rollback()
 		return err
 	}
 
