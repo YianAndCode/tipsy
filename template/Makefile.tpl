@@ -10,7 +10,7 @@ GO_BUILD_FLAGS = -trimpath
 # Go test flags
 GO_TEST_FLAGS = -v -race
 
-all: tidy fmt test api
+all: tidy fmt test api wire
 
 api:
 	go build $(GO_BUILD_FLAGS) -o ${BIN_DIR}/${API_TGT} ${API_SRC}
@@ -23,6 +23,9 @@ fmt:
 
 tidy:
 	go mod tidy
+
+wire:
+	cd cmd/api && wire
 
 clean:
 	rm -f ${BIN_DIR}/${API_TGT}
