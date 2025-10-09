@@ -1,1 +1,1 @@
-.tipsy.env
+bin/
