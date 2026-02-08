@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/YianAndCode/tipsy/internal/core"
 	tplEng "github.com/YianAndCode/tipsy/internal/template"
 	"github.com/YianAndCode/tipsy/internal/utils"
 	tplFs "github.com/YianAndCode/tipsy/template"
@@ -19,8 +20,9 @@ func NewCommand() *cobra.Command {
 		Use:   "new [type] [name]",
 		Short: "Create a new component",
 		Long: `Create a new component for your Gin project.
-	Supported types: entity, repo, controller, middleware, service
+	Supported types: app, entity, repo, controller, middleware, service
 	For example:
+	  tipsy new app User
 	  tipsy new entity User
 	  tipsy new repo User
 	  tipsy new controller UserController
@@ -31,12 +33,13 @@ func NewCommand() *cobra.Command {
 			firtstLetterUpper := func(s string) string {
 				return strings.ToUpper(s[:1]) + s[1:]
 			}
-			componentType := args[0]
+			componentTypeStr := args[0]
 			componentName := firtstLetterUpper(args[1]) // 确保首字母大写
 
 			// 【说明】
-			// 目前支持五类组件：entity、repo、controller、middleware、service
+			// 目前支持六类组件：app、entity、repo、controller、middleware、service
 			// 根据组件类型创建对应的文件夹和文件：
+			// app: 参数：ApplicationName 模板：internal/application/base.tpl -> internal/application/{name}/{name}_app.go
 			// entity: 参数：Name 模板：internal/entity/base.tpl -> internal/entity/{name}.go
 			// repo: 参数：RepoName 模板：internal/repo/base.tpl -> internal/repo/{name}/{name}_repo.go
 			// controller: ControllerName 模板：internal/controller/base.tpl -> internal/controller/{name}/{name}_controller.go
@@ -44,25 +47,20 @@ func NewCommand() *cobra.Command {
 			// service: ServiceName 模板：internal/service/base.tpl -> internal/service/{name}/{name}_service.go
 			//
 			// 它们都有一个共同的参数 ProjectName，通过读取 $(pwd)/.tipsy.env 中的 TIPSY_PROJECT_NAME 变量获取
-			// repo/controller/middleware/service 都需要生成 provider，即在 internal/{component}/provider.go 文件中注册组件，
+			// app/repo/controller/middleware/service 都需要生成 provider，即在 internal/{component}/provider.go 文件中注册组件，
 			// 需要增加 import 项和在 wire.NewSet() 的最后一个参数追加 New 函数
 			//
 			// controller 需要在 internal/controller/dto/ 下新增一个 {name}.go 文件
 
 			// 验证组件类型是否合法
-			validTypes := map[string]bool{
-				"entity":     true,
-				"repo":       true,
-				"controller": true,
-				"middleware": true,
-				"service":    true,
-			}
-			if !validTypes[componentType] {
-				fmt.Printf("Error: unsupported component type '%s'. Supported types are: entity, repo, controller, middleware, service\n", componentType)
+			if !core.IsValidComponent(componentTypeStr) {
+				fmt.Printf("Error: unsupported component type '%s'. Supported types are: app, entity, repo, controller, middleware, service\n", componentTypeStr)
 				return
 			}
 
-			fmt.Printf("Creating a new %s named %s\n", componentType, componentName)
+			fmt.Printf("Creating a new %s named %s\n", componentTypeStr, componentName)
+
+			componentType := core.GetComponentType(componentTypeStr)
 
 			// 获取当前工作目录
 			cwd, err := os.Getwd()
@@ -70,6 +68,7 @@ func NewCommand() *cobra.Command {
 				fmt.Printf("Error getting current working directory: %v\n", err)
 				return
 			}
+			componentDir := core.GetComponentDir(cwd, componentType)
 
 			// 读取 .tipsy.env 文件获取项目名
 			envContent, err := os.ReadFile(filepath.Join(cwd, ".tipsy.env"))
@@ -103,7 +102,7 @@ func NewCommand() *cobra.Command {
 			// 根据组件类型查找对应的模板
 			var matchedTemplates []string
 			for tplPath := range templates {
-				if strings.Contains(tplPath, fmt.Sprintf("internal/%s/base.tpl", componentType)) {
+				if strings.Contains(tplPath, fmt.Sprintf("%s/base.tpl", core.GetComponentDir("", componentType))) {
 					matchedTemplates = append(matchedTemplates, tplPath)
 				}
 			}
@@ -120,15 +119,17 @@ func NewCommand() *cobra.Command {
 
 			// 根据组件类型设置特定参数
 			switch componentType {
-			case "entity":
+			case core.App:
+				data["ApplicationName"] = componentName
+			case core.Entity:
 				data["Name"] = componentName
-			case "repo":
+			case core.Repo:
 				data["RepoName"] = componentName
-			case "controller":
+			case core.Controller:
 				data["ControllerName"] = componentName
-			case "middleware":
+			case core.Middleware:
 				data["MiddlewareName"] = componentName
-			case "service":
+			case core.Service:
 				data["ServiceName"] = componentName
 			}
 
@@ -141,16 +142,18 @@ func NewCommand() *cobra.Command {
 				// 计算目标文件路径
 				var targetPath string
 				switch componentType {
-				case "entity":
-					targetPath = filepath.Join(cwd, "internal", "entity", utils.ToSnakeCase(componentName)+".go")
-				case "repo":
-					targetPath = filepath.Join(cwd, "internal", "repo", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_repo.go")
-				case "controller":
-					targetPath = filepath.Join(cwd, "internal", "controller", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_controller.go")
-				case "middleware":
-					targetPath = filepath.Join(cwd, "internal", "middleware", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_middleware.go")
-				case "service":
-					targetPath = filepath.Join(cwd, "internal", "service", utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_service.go")
+				case core.App:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_app.go")
+				case core.Entity:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName)+".go")
+				case core.Repo:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_repo.go")
+				case core.Controller:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_controller.go")
+				case core.Middleware:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_middleware.go")
+				case core.Service:
+					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_service.go")
 				}
 
 				// 检查文件是否已存在
@@ -184,8 +187,8 @@ func NewCommand() *cobra.Command {
 				fmt.Printf("Generated file: %s\n", targetPath)
 
 				// 更新 provider.go
-				if componentType != "entity" {
-					providerPath := filepath.Join(cwd, "internal", componentType, "provider.go")
+				if componentType != core.Entity {
+					providerPath := filepath.Join(componentDir, "provider.go")
 					providerContent, err := os.ReadFile(providerPath)
 					if err != nil {
 						fmt.Printf("Error reading provider file: %v\n", err)
@@ -225,7 +228,7 @@ func NewCommand() *cobra.Command {
 							for j := i + 1; j < len(lines); j++ {
 								if strings.Contains(lines[j], ")") {
 									// 在最后一个参数后添加新组件
-									newProvider := fmt.Sprintf("\t%s.New%s%s,", utils.ToSnakeCase(componentName), componentName, firtstLetterUpper(componentType))
+									newProvider := fmt.Sprintf("\t%s.%s,", utils.ToSnakeCase(componentName), core.GetProviderConstructorName(componentName, componentType))
 									lines = append(lines[:j], append([]string{newProvider}, lines[j:]...)...)
 									break
 								}
@@ -241,31 +244,31 @@ func NewCommand() *cobra.Command {
 				}
 
 				// 新增 dto
-				if componentType == "controller" {
+				if componentType == core.Controller || componentType == core.App {
 					dtoPath := filepath.Join(cwd, "internal", "controller", "dto", fmt.Sprintf("%s.go", utils.ToSnakeCase(componentName)))
 					// 检查文件是否已存在
 					if _, err := os.Stat(dtoPath); err == nil {
-						fmt.Printf("Error: %s already exists\n", dtoPath)
-						return
+						fmt.Printf("DTO file %s exists, skip\n", dtoPath)
 					} else if !os.IsNotExist(err) {
 						fmt.Printf("Error checking file %s: %v\n", dtoPath, err)
 						return
-					}
-					// 创建目标文件所在的目录
-					targetDir := filepath.Dir(dtoPath)
-					if err := os.MkdirAll(targetDir, 0755); err != nil {
-						fmt.Printf("Error creating directory for %s: %v\n", dtoPath, err)
-						continue
-					}
-					result, err := tpl.Execute("internal/controller/dto/base.tpl", data)
-					if err != nil {
-						fmt.Printf("Error executing template %s: %v\n", "internal/controller/dto/base.tpl", err)
-						continue
-					}
-					// 写入文件
-					if err := os.WriteFile(dtoPath, []byte(result), 0644); err != nil {
-						fmt.Printf("Error writing file %s: %v\n", dtoPath, err)
-						continue
+					} else {
+						// 创建目标文件所在的目录
+						targetDir := filepath.Dir(dtoPath)
+						if err := os.MkdirAll(targetDir, 0755); err != nil {
+							fmt.Printf("Error creating directory for %s: %v\n", dtoPath, err)
+							continue
+						}
+						result, err := tpl.Execute("internal/controller/dto/base.tpl", data)
+						if err != nil {
+							fmt.Printf("Error executing template %s: %v\n", "internal/controller/dto/base.tpl", err)
+							continue
+						}
+						// 写入文件
+						if err := os.WriteFile(dtoPath, []byte(result), 0644); err != nil {
+							fmt.Printf("Error writing file %s: %v\n", dtoPath, err)
+							continue
+						}
 					}
 				}
 			}

@@ -4,9 +4,11 @@
 package main
 
 import (
+	"{{ .ProjectName }}/internal/application"
 	"{{ .ProjectName }}/internal/config"
-	"{{ .ProjectName }}/internal/contract"
 	"{{ .ProjectName }}/internal/controller"
+	"{{ .ProjectName }}/internal/data"
+	"{{ .ProjectName }}/internal/log"
 	"{{ .ProjectName }}/internal/middleware"
 	"{{ .ProjectName }}/internal/repo"
 	"{{ .ProjectName }}/internal/router"
@@ -16,10 +18,18 @@ import (
 	"github.com/google/wire"
 )
 
-func initAPIServer(log contract.Logger, cnf *config.Config) *server.APIServer {
+func initAPIServer() (*Application, func(), error) {
+	// Naming provider sets with suffixes like "Config" or "Log" aids debugging.
+	// If an error occurs, the provider set's name will appear in the error message,
+	// making it easier to quickly identify the source of the problem.
 	panic(wire.Build(
+		appProviderSet,
+		config.ProviderSetConfig,
+		log.ProviderSetLog,
+		data.ProviderSetData,
 		server.ProviderSetServer,
 		controller.ProviderSetController,
+		application.ProviderSet,
 		repo.ProviderSetRepo,
 		service.ProviderSetService,
 		router.ProviderSetRouter,

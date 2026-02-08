@@ -1,8 +1,11 @@
 package constant
 
-type CtxKey string
+// TxKey is the key for the database transaction in the context.
+type TxKeyType struct{}
 
-const (
-	CtxKey_DbTx   string = "db_tx"
-	CtxKey_UserId string = "user_id"
-)
+var TxKey = TxKeyType{}
+
+// UserIDKey is the key for the user ID in the context.
+type UserIDKeyType struct{}
+
+var UserIDKey = UserIDKeyType{}

@@ -1,7 +1,7 @@
 package log
 
 import (
-	"{{ .ProjectName }}/internal/contract"
+	"{{ .ProjectName }}/internal/config"
 
 	"github.com/rs/zerolog"
 )
@@ -21,7 +21,7 @@ type Logger struct {
 	level  Level
 }
 
-func NewLogger(logFile string, level string) contract.Logger {
+func NewLogger(cnf *config.Config) *Logger {
 	convertLevel := func(level string) Level {
 		var lv Level = InfoLevel
 		switch level {
@@ -36,13 +36,13 @@ func NewLogger(logFile string, level string) contract.Logger {
 		}
 		return lv
 	}
-	fm := NewFileManager(logFile)
+	fm := NewFileManager(cnf.App.LogFile)
 	logger := zerolog.New(fm).With().Timestamp().Logger()
 
 	return &Logger{
 		logger: &logger,
 		fm:     fm,
-		level:  convertLevel(level),
+		level:  convertLevel(cnf.App.LogLevel),
 	}
 }
 

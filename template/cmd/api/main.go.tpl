@@ -6,38 +6,29 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"{{ .ProjectName }}/cmd/api/bootstrap"
-	"{{ .ProjectName }}/internal/config"
-	"{{ .ProjectName }}/internal/log"
 	"syscall"
 	"time"
 )
 
 func main() {
-	flag := bootstrap.ParseFlag()
-
-	err := bootstrap.Boot(flag.Config)
+	app, cleanup, err := initAPIServer()
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to init app: %v", err))
 	}
-
-	cnf := config.Get()
-
-	logger := log.NewLogger(cnf.App.LogFile, cnf.App.LogLevel)
-	defer logger.Close()
-
-	apiServer := initAPIServer(logger, cnf)
+	defer cleanup()
+	defer app.Logger.Close()
 
 	srv := http.Server{
-		Addr:         fmt.Sprintf("%s:%d", cnf.App.Host, cnf.App.Port),
-		Handler:      apiServer.Handler,
+		Addr:         fmt.Sprintf("%s:%d", app.Config.App.Host, app.Config.App.Port),
+		Handler:      app.Server.Handler,
 		ReadTimeout:  time.Second * 5,
 		WriteTimeout: time.Second * 5,
 	}
 
 	go func() {
+		app.Logger.Infof("server listening on %s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Errorf("listen: %s", err)
+			app.Logger.Errorf("listen: %s", err)
 		}
 	}()
 
@@ -50,17 +41,17 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1, syscall.SIGUSR2,
 	)
 	{{ "<" | Safe }}-quit
-	logger.Info("Shutdown Server ...")
+	app.Logger.Info("Shutdown Server ...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Errorf("Server Shutdown: %s", err)
+		app.Logger.Errorf("Server Shutdown: %s", err)
 	}
 
 	select {
 	case {{ "<" | Safe }}-ctx.Done():
-		logger.Info("timeout of 5 seconds.")
+		app.Logger.Info("timeout of 5 seconds.")
 	}
-	logger.Info("Server exiting")
+	app.Logger.Info("Server exiting")
 }
