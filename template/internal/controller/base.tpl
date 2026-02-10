@@ -16,11 +16,11 @@ func New{{ .ControllerName }}Controller() *{{ .ControllerName }}Controller {
 }
 
 // SomeMethod
-func (c {{ .ControllerName }}Controller) SomeMethod(ctx *gin.Context) (any, error) {
+func (c *{{ .ControllerName }}Controller) SomeMethod(ctx *gin.Context) (any, error) {
 	return c.someMethod(ctx)
 }
 
-func (c {{ .ControllerName }}Controller) someMethod(ctx *gin.Context) (*dto.SomeMethodResponse, error) {
+func (c *{{ .ControllerName }}Controller) someMethod(ctx *gin.Context) (*dto.SomeMethodResponse, error) {
 	var req dto.SomeMethodReqeust
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return nil, apperr.New(errcode.InvalidParam)

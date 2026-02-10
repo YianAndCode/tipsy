@@ -10,7 +10,7 @@ func New{{ .MiddlewareName }}Middleware() *{{ .MiddlewareName }}Middleware {
 	return &{{ .MiddlewareName }}Middleware{}
 }
 
-func (m {{ .MiddlewareName }}Middleware) {{ .MiddlewareName }}(c *gin.Context) {
+func (m *{{ .MiddlewareName }}Middleware) {{ .MiddlewareName }}(c *gin.Context) {
 	// TODO
 
 	c.Next()

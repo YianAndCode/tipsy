@@ -22,11 +22,11 @@ func NewUserController(
 }
 
 // 登录
-func (c UserController) Login(ctx *gin.Context) (any, error) {
+func (c *UserController) Login(ctx *gin.Context) (any, error) {
 	return c.login(ctx)
 }
 
-func (c UserController) login(ctx *gin.Context) (*dto.UserLoginResponse, error) {
+func (c *UserController) login(ctx *gin.Context) (*dto.UserLoginResponse, error) {
 	var req dto.UserLoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return nil, apperr.New(errcode.InvalidParam)
@@ -36,11 +36,11 @@ func (c UserController) login(ctx *gin.Context) (*dto.UserLoginResponse, error) 
 }
 
 // 注册
-func (c UserController) Register(ctx *gin.Context) (any, error) {
+func (c *UserController) Register(ctx *gin.Context) (any, error) {
 	return c.register(ctx)
 }
 
-func (c UserController) register(ctx *gin.Context) (*dto.UserRegisterResponse, error) {
+func (c *UserController) register(ctx *gin.Context) (*dto.UserRegisterResponse, error) {
 	var req dto.UserRegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return nil, apperr.New(errcode.InvalidParam)

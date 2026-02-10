@@ -3,11 +3,12 @@ package user
 import (
 	"context"
 	"errors"
+	"time"
+
 	"{{ .ProjectName }}/internal/contract"
 	"{{ .ProjectName }}/internal/contract/datatype"
 	"{{ .ProjectName }}/internal/entity"
 	"{{ .ProjectName }}/internal/repo/user"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,7 +26,7 @@ func NewUserService(repo *user.UserRepo, logger contract.Logger) *UserService {
 }
 
 // 注册
-func (s UserService) Register(ctx context.Context, loginName, password, nickname string) (*entity.User, error) {
+func (s *UserService) Register(ctx context.Context, loginName, password, nickname string) (*entity.User, error) {
 	passwordHash, err := PasswordHash(password)
 	if err != nil {
 		s.log.Errorf("hash password failed: %s", err.Error())
@@ -44,7 +45,7 @@ func (s UserService) Register(ctx context.Context, loginName, password, nickname
 }
 
 // 登录
-func (s UserService) Login(ctx context.Context, loginName, password string) (*entity.User, error) {
+func (s *UserService) Login(ctx context.Context, loginName, password string) (*entity.User, error) {
 	if loginName == "" {
 		return nil, errors.New("invalid username")
 	}

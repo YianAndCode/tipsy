@@ -1,10 +1,11 @@
 package user
 
 import (
+	"context"
+
 	"{{ .ProjectName }}/internal/contract/datatype"
 	"{{ .ProjectName }}/internal/data"
 	"{{ .ProjectName }}/internal/entity"
-	"context"
 
 	"xorm.io/xorm"
 )
@@ -19,9 +20,8 @@ func NewUserRepo(db *xorm.Engine) *UserRepo {
 	}
 }
 
-
 // 通过登录名获取用户
-func (r UserRepo) GetByLoginName(ctx context.Context, loginName string) (*entity.User, error) {
+func (r *UserRepo) GetByLoginName(ctx context.Context, loginName string) (*entity.User, error) {
 	user := &entity.User{LoginName: loginName}
 	has, err := r.CtxDB(ctx).Get(user)
 	if err != nil {
@@ -34,7 +34,7 @@ func (r UserRepo) GetByLoginName(ctx context.Context, loginName string) (*entity
 }
 
 // 插入用户
-func (r UserRepo) Insert(ctx context.Context, userId datatype.UserId, loginName, password, nickname string) (*entity.User, error) {
+func (r *UserRepo) Insert(ctx context.Context, userId datatype.UserId, loginName, password, nickname string) (*entity.User, error) {
 	user := &entity.User{
 		UserId:    userId,
 		LoginName: loginName,
@@ -50,7 +50,7 @@ func (r UserRepo) Insert(ctx context.Context, userId datatype.UserId, loginName,
 }
 
 // 更新密码
-func (r UserRepo) UpdatePassword(ctx context.Context, userId datatype.UserId, newPassword string) error {
+func (r *UserRepo) UpdatePassword(ctx context.Context, userId datatype.UserId, newPassword string) error {
 	user := &entity.User{
 		UserId:   userId,
 		Password: newPassword,
@@ -60,7 +60,7 @@ func (r UserRepo) UpdatePassword(ctx context.Context, userId datatype.UserId, ne
 }
 
 // 更新
-func (r UserRepo) Update(ctx context.Context, user *entity.User) error {
+func (r *UserRepo) Update(ctx context.Context, user *entity.User) error {
 	_, err := r.CtxDB(ctx).Update(user)
 	return err
 }

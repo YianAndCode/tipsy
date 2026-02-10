@@ -19,7 +19,7 @@ func (a AuthMiddleware) Auth(c *gin.Context) {
 	if len(authorization) {{ "<" | Safe }} 7 {
 		c.JSON(http.StatusForbidden, gin.H{
 			"code": 403,
-			"msg":  "唔好搞嘢",
+			"msg":  "Permission Denied",
 			"data": nil,
 		})
 		c.Abort()
@@ -30,14 +30,14 @@ func (a AuthMiddleware) Auth(c *gin.Context) {
 	if token == "" {
 		c.JSON(http.StatusForbidden, gin.H{
 			"code": 403,
-			"msg":  "唔好搞嘢",
+			"msg":  "Permission Denied",
 			"data": nil,
 		})
 		c.Abort()
 		return
 	}
 
-	// TODO: c.Set(string(constant.CtxKey_UserId), uint64(userId))
+	// TODO:
 
 	c.Next()
 }
