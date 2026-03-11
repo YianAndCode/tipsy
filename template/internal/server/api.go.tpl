@@ -7,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// API server
+type APIServer struct {
+	Handler *gin.Engine
+}
+
 // Public API server
 func NewAPIHttpServer(
 	apiRouter *router.APIRouter,

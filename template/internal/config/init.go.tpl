@@ -2,7 +2,7 @@ package config
 
 import (
 	"os"
-	"{{ .ProjectName }}/cmd/api/bootstrap"
+	"{{ .ProjectName }}/internal/bootstrap"
 
 	"github.com/google/wire"
 	"gopkg.in/yaml.v3"
