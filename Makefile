@@ -3,9 +3,10 @@
 BINARY_NAME=tipsy
 DOCKER_IMAGE=tipsy
 DOCKER_TAG=latest
+VERSION ?= $(shell git describe --tags --always --dirty)
 
 build:
-	go build -o bin/$(BINARY_NAME) ./cmd/tipsy
+	go build -ldflags="-s -w -X 'main.Version=$(VERSION)'" -o bin/$(BINARY_NAME) ./cmd/tipsy
 
 test:
 	go test ./...
