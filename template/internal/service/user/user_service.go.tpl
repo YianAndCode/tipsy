@@ -26,8 +26,8 @@ func NewUserService(repo *user.UserRepo, logger contract.Logger) *UserService {
 }
 
 // 注册
-func (s *UserService) Register(ctx context.Context, loginName, password, nickname string) (*entity.User, error) {
-	passwordHash, err := PasswordHash(password)
+func (s *UserService) Register(ctx context.Context, in *RegisterInput) (*entity.User, error) {
+	passwordHash, err := PasswordHash(in.Password)
 	if err != nil {
 		s.log.Errorf("hash password failed: %s", err.Error())
 		return nil, errors.New("something wrong")
@@ -36,7 +36,7 @@ func (s *UserService) Register(ctx context.Context, loginName, password, nicknam
 	// TODO:
 	userId := datatype.UserId(time.Now().Unix())
 
-	user, err := s.repo.Insert(ctx, userId, loginName, passwordHash, nickname)
+	user, err := s.repo.Insert(ctx, userId, in.LoginName, passwordHash, in.Nickname)
 	if err != nil {
 		return nil, err
 	}
@@ -45,17 +45,17 @@ func (s *UserService) Register(ctx context.Context, loginName, password, nicknam
 }
 
 // 登录
-func (s *UserService) Login(ctx context.Context, loginName, password string) (*entity.User, error) {
-	if loginName == "" {
+func (s *UserService) Login(ctx context.Context, in *LoginInput) (*entity.User, error) {
+	if in.LoginName == "" {
 		return nil, errors.New("invalid username")
 	}
 
-	user, err := s.repo.GetByLoginName(ctx, loginName)
+	user, err := s.repo.GetByLoginName(ctx, in.LoginName)
 	if err != nil {
 		return nil, err
 	}
 
-	if !PasswordVerify(password, user.Password) {
+	if !PasswordVerify(in.Password, user.Password) {
 		return nil, errors.New("username or password not macth")
 	}
 

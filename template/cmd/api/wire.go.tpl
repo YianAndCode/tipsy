@@ -4,7 +4,6 @@
 package main
 
 import (
-	"{{ .ProjectName }}/internal/application"
 	"{{ .ProjectName }}/internal/config"
 	"{{ .ProjectName }}/internal/controller"
 	"{{ .ProjectName }}/internal/data"
@@ -29,7 +28,6 @@ func initAPIServer() (*Application, func(), error) {
 		data.ProviderSetData,
 		server.ProviderSetServer,
 		controller.ProviderSetController,
-		application.ProviderSet,
 		repo.ProviderSetRepo,
 		service.ProviderSetService,
 		router.ProviderSetRouter,

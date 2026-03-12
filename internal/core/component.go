@@ -9,7 +9,6 @@ type ComponentType string
 
 const (
 	Unknown    ComponentType = ""
-	App        ComponentType = "application"
 	Entity     ComponentType = "entity"
 	Repo       ComponentType = "repo"
 	Controller ComponentType = "controller"
@@ -24,8 +23,6 @@ func (ct ComponentType) String() string {
 // 是否是合法的组件
 func IsValidComponent(componentTypeStr string) bool {
 	validTypes := map[string]bool{
-		"app":         true, // alias for application
-		"application": true,
 		"entity":      true,
 		"repo":        true,
 		"controller":  true,
@@ -38,8 +35,6 @@ func IsValidComponent(componentTypeStr string) bool {
 // 获取组件类型
 func GetComponentType(componentTypeStr string) ComponentType {
 	switch componentTypeStr {
-	case "app", "application":
-		return App
 	case "entity":
 		return Entity
 	case "repo":
@@ -59,8 +54,6 @@ func GetComponentType(componentTypeStr string) ComponentType {
 func GetComponentDir(cwd string, componentType ComponentType) string {
 	var componentDir string
 	switch componentType {
-	case App:
-		componentDir = filepath.Join(cwd, "internal", "application")
 	case Entity:
 		componentDir = filepath.Join(cwd, "internal", "entity")
 	case Repo:
@@ -78,8 +71,6 @@ func GetComponentDir(cwd string, componentType ComponentType) string {
 // 获取 Provider 构造函数名
 func GetProviderConstructorName(componentName string, componentType ComponentType) string {
 	switch componentType {
-	case App:
-		return fmt.Sprintf("New%sApp", componentName)
 	case Repo:
 		return fmt.Sprintf("New%sRepo", componentName)
 	case Controller:

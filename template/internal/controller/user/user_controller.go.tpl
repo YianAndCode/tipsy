@@ -1,23 +1,23 @@
 package user
 
 import (
-	"{{ .ProjectName }}/internal/application/user"
 	"{{ .ProjectName }}/internal/contract/constant/errcode"
 	apperr "{{ .ProjectName }}/internal/contract/error"
 	"{{ .ProjectName }}/internal/controller/dto"
+	"{{ .ProjectName }}/internal/service/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	app *user.UserApp
+	service *user.UserService
 }
 
 func NewUserController(
-	app *user.UserApp,
+	service *user.UserService,
 ) *UserController {
 	return &UserController{
-		app: app,
+		service: service,
 	}
 }
 
@@ -32,7 +32,15 @@ func (c *UserController) login(ctx *gin.Context) (*dto.UserLoginResponse, error)
 		return nil, apperr.New(errcode.InvalidParam)
 	}
 
-	return c.app.Login(ctx, &req)
+	_, err := c.service.Login(ctx, &user.LoginInput{
+		LoginName: req.LoginName,
+		Password:  req.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserLoginResponse{}, nil
 }
 
 // 注册
@@ -46,5 +54,14 @@ func (c *UserController) register(ctx *gin.Context) (*dto.UserRegisterResponse, 
 		return nil, apperr.New(errcode.InvalidParam)
 	}
 
-	return c.app.Register(ctx, &req)
+	_, err := c.service.Register(ctx, &user.RegisterInput{
+		LoginName: req.LoginName,
+		Password:  req.Password,
+		Nickname:  req.Nickname,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserRegisterResponse{}, nil
 }

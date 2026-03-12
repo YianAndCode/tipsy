@@ -6,7 +6,7 @@
 
 ## 简介
 
-Tipsy 是一个使用 Go 编写的用于 Gin 框架项目的命令行工具。类似于 Laravel 的 `artisan`，它可以初始化一个新的 Gin 项目，并快速生成各种组件，如应用、数据库实体、存储层、控制器、中间件和服务。
+Tipsy 是一个使用 Go 编写的用于 Gin 框架项目的命令行工具。类似于 Laravel 的 `artisan`，它可以初始化一个新的 Gin 项目，并快速生成各种组件，如数据库实体、存储层、控制器、中间件和服务。
 
 ## 安装
 
@@ -21,8 +21,10 @@ go install github.com/YianAndCode/tipsy/cmd/tipsy@latest
 创建一个新的 Gin 项目：
 
 ```bash
-tipsy create <project-name>
+tipsy create <project_name>
 ```
+
+*（注：`<project_name>` 为必填项）*
 
 这个命令将生成一个结构完善的 Gin 项目，目录结构如下：
 
@@ -32,7 +34,6 @@ tipsy create <project-name>
 │   └── api
 │       └── bootstrap
 └── internal
-    ├── application
     ├── config
     ├── contract
     │   ├── constant
@@ -56,42 +57,36 @@ tipsy create <project-name>
 
 ### 生成组件
 
-Tipsy 提供了多个命令来生成不同的组件：
+Tipsy 提供了多个命令来生成不同的组件。注意：在以下所有命令中，参数 `<name>` 均为**必填项**。
 
-1. 创建新应用：
+1. 创建新数据实体：
 
 ```bash
-tipsy new app <app-name>
+tipsy new entity <name>
 ```
 
-2. 创建新数据实体：
+2. 创建新仓储层：
 
 ```bash
-tipsy new entity <entity-name>
+tipsy new repo <name>
 ```
 
-3. 创建新仓储层：
+3. 创建新控制器：
 
 ```bash
-tipsy new repo <repo-name>
+tipsy new controller <name>
 ```
 
-4. 创建新控制器：
+4. 创建新中间件：
 
 ```bash
-tipsy new controller <controller-name>
+tipsy new middleware <name>
 ```
 
-5. 创建新中间件：
+5. 创建新服务：
 
 ```bash
-tipsy new middleware <middleware-name>
-```
-
-6. 创建新服务：
-
-```bash
-tipsy new service <service-name>
+tipsy new service <name>
 ```
 
 每个命令都会生成相应的 Go 源文件。

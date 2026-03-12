@@ -20,9 +20,8 @@ func NewCommand() *cobra.Command {
 		Use:   "new [type] [name]",
 		Short: "Create a new component",
 		Long: `Create a new component for your Gin project.
-	Supported types: app, entity, repo, controller, middleware, service
+	Supported types: entity, repo, controller, middleware, service
 	For example:
-	  tipsy new app User
 	  tipsy new entity User
 	  tipsy new repo User
 	  tipsy new controller UserController
@@ -36,10 +35,8 @@ func NewCommand() *cobra.Command {
 			componentTypeStr := args[0]
 			componentName := firtstLetterUpper(args[1]) // 确保首字母大写
 
-			// 【说明】
-			// 目前支持六类组件：app、entity、repo、controller、middleware、service
+			// 目前支持五类组件：entity、repo、controller、middleware、service
 			// 根据组件类型创建对应的文件夹和文件：
-			// app: 参数：ApplicationName 模板：internal/application/base.tpl -> internal/application/{name}/{name}_app.go
 			// entity: 参数：Name 模板：internal/entity/base.tpl -> internal/entity/{name}.go
 			// repo: 参数：RepoName 模板：internal/repo/base.tpl -> internal/repo/{name}/{name}_repo.go
 			// controller: ControllerName 模板：internal/controller/base.tpl -> internal/controller/{name}/{name}_controller.go
@@ -47,14 +44,14 @@ func NewCommand() *cobra.Command {
 			// service: ServiceName 模板：internal/service/base.tpl -> internal/service/{name}/{name}_service.go
 			//
 			// 它们都有一个共同的参数 ProjectName，通过读取 $(pwd)/.tipsy.env 中的 TIPSY_PROJECT_NAME 变量获取
-			// app/repo/controller/middleware/service 都需要生成 provider，即在 internal/{component}/provider.go 文件中注册组件，
+			// repo/controller/middleware/service 都需要生成 provider，即在 internal/{component}/provider.go 文件中注册组件，
 			// 需要增加 import 项和在 wire.NewSet() 的最后一个参数追加 New 函数
 			//
 			// controller 需要在 internal/controller/dto/ 下新增一个 {name}.go 文件
 
 			// 验证组件类型是否合法
 			if !core.IsValidComponent(componentTypeStr) {
-				fmt.Printf("Error: unsupported component type '%s'. Supported types are: app, entity, repo, controller, middleware, service\n", componentTypeStr)
+				fmt.Printf("Error: unsupported component type '%s'. Supported types are: entity, repo, controller, middleware, service\n", componentTypeStr)
 				return
 			}
 
@@ -119,8 +116,6 @@ func NewCommand() *cobra.Command {
 
 			// 根据组件类型设置特定参数
 			switch componentType {
-			case core.App:
-				data["ApplicationName"] = componentName
 			case core.Entity:
 				data["Name"] = componentName
 			case core.Repo:
@@ -142,8 +137,6 @@ func NewCommand() *cobra.Command {
 				// 计算目标文件路径
 				var targetPath string
 				switch componentType {
-				case core.App:
-					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName), utils.ToSnakeCase(componentName)+"_app.go")
 				case core.Entity:
 					targetPath = filepath.Join(componentDir, utils.ToSnakeCase(componentName)+".go")
 				case core.Repo:
@@ -244,7 +237,7 @@ func NewCommand() *cobra.Command {
 				}
 
 				// 新增 dto
-				if componentType == core.Controller || componentType == core.App {
+				if componentType == core.Controller {
 					dtoPath := filepath.Join(cwd, "internal", "controller", "dto", fmt.Sprintf("%s.go", utils.ToSnakeCase(componentName)))
 					// 检查文件是否已存在
 					if _, err := os.Stat(dtoPath); err == nil {
