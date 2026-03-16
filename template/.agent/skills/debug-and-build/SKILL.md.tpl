@@ -1,6 +1,7 @@
 ---
 name: debug-and-build
-description: Some tools for debugging and building. Use when you need to debug or build the project.
+description: Guidelines and tools for debugging, building the project, and rapidly scaffolding new code components using tipsy.
+version: 1.0.0
 ---
 
 # Debug and Build Skill
@@ -22,17 +23,20 @@ The project uses a `Makefile` to streamline common tasks. **You MUST prioritize 
  - `make wire`: Generates dependency injection code using Wire.
  - `make tidy`: Cleans up the project directory by removing unnecessary files.
 
-## tipsy
+## Rapid Code Scaffolding with Tipsy
 
-[Tipsy](https://github.com/YianAndCode/tipsy) is command line interface helps you work with the gin framework.
+[Tipsy](https://github.com/YianAndCode/tipsy) is a command-line interface that helps you work with the Gin framework and quickly generate code skeletons (boilerplates) for various components.
 
-The `tipsy --help` command will show you a list of available commands:
+### Generating Code Skeletons
+
+Whenever you need to create a new module, controller, service, repository, or other components, you should **proactively use `tipsy`** to generate the initial structure rather than creating folders and files manually.
+
+The `tipsy new --help` command lists the available commands:
 
 ```text
 Create a new component for your Gin project.
-        Supported types: app, entity, repo, controller, middleware, service
+        Supported types: entity, repo, controller, middleware, service
         For example:
-          tipsy new app User
           tipsy new entity User
           tipsy new repo User
           tipsy new controller UserController
@@ -46,7 +50,10 @@ Flags:
   -h, --help   help for new
 ```
 
-If you don't have `tipsy` installed, you can install it by running:
+
+### Installation
+
+If `tipsy` is not installed or available in your environment, you can install it using:
 
 ```sh
 go install github.com/YianAndCode/tipsy/cmd/tipsy@latest
