@@ -78,6 +78,7 @@ When creating or updating an API, adhere to the following specifications:
 4.  **Business Logic & Transaction Management**:
     -   The service function handles **pure domain logic** and state transitions.
     -   **Transactions**: Transactions must *only* be started within public service methods. Because a controller should only call *one* service method per request (ensuring a request maps to a single transaction), explicit transaction management happens at the start of these public boundaries. The `ctx` passed down to repositories will carry this active transaction.
+    -   **Transaction Closures (`DoTransaction`)**: The closure passed to `DoTransaction` **MUST ONLY** contain database write operations (e.g., repository `Insert`, `Update`, `Delete` calls). All data fetching, calculations, data preparations, and error-returning validations MUST be performed *before* the transaction block. This forces quick transaction resolution and reduces the likelihood of transaction rollbacks.
 
 5.  **Service Dependencies**: 
     -   **Problem**: Service functions should avoid depending on each other to prevent tight coupling and circular dependencies.
