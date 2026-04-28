@@ -9,3 +9,10 @@ var TxKey = TxKeyType{}
 type UserIDKeyType struct{}
 
 var UserIDKey = UserIDKeyType{}
+
+const (
+    // CtxKeyRequestID is the key for the request ID in the context.
+    CtxKeyRequestID = "request_id"
+    // CtxKeyURI is the key for the URI in the context.
+    CtxKeyURI = "uri"
+)

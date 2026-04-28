@@ -31,7 +31,7 @@ func Controller(log contract.Logger, controllerFunc ControllerFunc) func(*gin.Co
 
 			finalResp := Fail(errCode, errMsg)
 			extraErr := errors.Unwrap(err)
-			log.Errorf("%s, extra err: %v", err.Error(), extraErr)
+			log.Errorf(ctx, "%s, extra err: %v", err.Error(), extraErr)
 			ctx.JSON(
 				http.StatusOK,
 				finalResp,

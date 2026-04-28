@@ -2,8 +2,10 @@ package server
 
 import (
 	"{{ .ProjectName }}/internal/middleware/auth"
+	"{{ .ProjectName }}/internal/middleware/log"
 	"{{ .ProjectName }}/internal/router"
 
+	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,8 +18,11 @@ type APIServer struct {
 func NewAPIHttpServer(
 	apiRouter *router.APIRouter,
 	authMiddleware *auth.AuthMiddleware,
+	logMiddleware *log.LogMiddleware,
 ) *APIServer {
 	r := gin.New()
+	r.Use(requestid.New())
+	r.Use(logMiddleware.Log)
 	r.Use(gin.Recovery())
 	r.GET("/healthz", func(ctx *gin.Context) { ctx.String(200, "OK") })
 

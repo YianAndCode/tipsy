@@ -29,7 +29,7 @@ func NewUserService(repo *user.UserRepo, logger contract.Logger) *UserService {
 func (s *UserService) Register(ctx context.Context, in *RegisterInput) (*entity.User, error) {
 	passwordHash, err := PasswordHash(in.Password)
 	if err != nil {
-		s.log.Errorf("hash password failed: %s", err.Error())
+		s.log.Errorf(ctx, "hash password failed: %s", err.Error())
 		return nil, errors.New("something wrong")
 	}
 

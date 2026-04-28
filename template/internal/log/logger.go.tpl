@@ -1,7 +1,10 @@
 package log
 
 import (
+	"context"
+
 	"{{ .ProjectName }}/internal/config"
+	"{{ .ProjectName }}/internal/contract/constant"
 
 	"github.com/rs/zerolog"
 )
@@ -46,60 +49,73 @@ func NewLogger(cnf *config.Config) *Logger {
 	}
 }
 
-func (l *Logger) Debug(msg string) {
+func (l *Logger) addCtxFields(ctx context.Context, e *zerolog.Event) *zerolog.Event {
+	if ctx == nil {
+		return e
+	}
+	if reqID, ok := ctx.Value(constant.CtxKeyRequestID).(string); ok {
+		e.Str("request_id", reqID)
+	}
+	if uri, ok := ctx.Value(constant.CtxKeyURI).(string); ok {
+		e.Str("uri", uri)
+	}
+	return e
+}
+
+func (l *Logger) Debug(ctx context.Context, msg string) {
 	if l.level > DebugLevel {
 		return
 	}
-	l.logger.Debug().Msg(msg)
+	l.addCtxFields(ctx, l.logger.Debug()).Msg(msg)
 }
 
-func (l *Logger) Debugf(msg string, args ...interface{}) {
+func (l *Logger) Debugf(ctx context.Context, msg string, args ...interface{}) {
 	if l.level > DebugLevel {
 		return
 	}
-	l.logger.Debug().Msgf(msg, args...)
+	l.addCtxFields(ctx, l.logger.Debug()).Msgf(msg, args...)
 }
 
-func (l *Logger) Info(msg string) {
+func (l *Logger) Info(ctx context.Context, msg string) {
 	if l.level > InfoLevel {
 		return
 	}
-	l.logger.Info().Msg(msg)
+	l.addCtxFields(ctx, l.logger.Info()).Msg(msg)
 }
 
-func (l *Logger) Infof(msg string, args ...interface{}) {
+func (l *Logger) Infof(ctx context.Context, msg string, args ...interface{}) {
 	if l.level > InfoLevel {
 		return
 	}
-	l.logger.Info().Msgf(msg, args...)
+	l.addCtxFields(ctx, l.logger.Info()).Msgf(msg, args...)
 }
 
-func (l *Logger) Warn(msg string) {
+func (l *Logger) Warn(ctx context.Context, msg string) {
 	if l.level > WarnLevel {
 		return
 	}
-	l.logger.Warn().Msg(msg)
+	l.addCtxFields(ctx, l.logger.Warn()).Msg(msg)
 }
 
-func (l *Logger) Warnf(msg string, args ...interface{}) {
+func (l *Logger) Warnf(ctx context.Context, msg string, args ...interface{}) {
 	if l.level > WarnLevel {
 		return
 	}
-	l.logger.Warn().Msgf(msg, args...)
+	l.addCtxFields(ctx, l.logger.Warn()).Msgf(msg, args...)
 }
 
-func (l *Logger) Error(msg string) {
+func (l *Logger) Error(ctx context.Context, msg string) {
 	if l.level > ErrorLevel {
 		return
 	}
-	l.logger.Error().Msg(msg)
+	l.addCtxFields(ctx, l.logger.Error()).Msg(msg)
 }
 
-func (l *Logger) Errorf(msg string, args ...interface{}) {
+func (l *Logger) Errorf(ctx context.Context, msg string, args ...interface{}) {
 	if l.level > ErrorLevel {
 		return
 	}
-	l.logger.Error().Msgf(msg, args...)
+	l.addCtxFields(ctx, l.logger.Error()).Msgf(msg, args...)
 }
 
 func (l *Logger) Close() error {

@@ -18,6 +18,8 @@ func main() {
 	defer cleanup()
 	defer app.Logger.Close()
 
+	ctx, cancel := context.WithCancel(context.Background())
+
 	srv := http.Server{
 		Addr:         fmt.Sprintf("%s:%d", app.Config.App.Host, app.Config.App.Port),
 		Handler:      app.Server.Handler,
@@ -26,9 +28,9 @@ func main() {
 	}
 
 	go func() {
-		app.Logger.Infof("server listening on %s", srv.Addr)
+		app.Logger.Infof(ctx, "server listening on %s", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			app.Logger.Errorf("listen: %s", err)
+			app.Logger.Errorf(ctx, "listen: %s", err)
 		}
 	}()
 
@@ -41,17 +43,19 @@ func main() {
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGUSR1, syscall.SIGUSR2,
 	)
 	{{ "<" | Safe }}-quit
-	app.Logger.Info("Shutdown Server ...")
+	app.Logger.Info(ctx, "Shutdown Server ...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		app.Logger.Errorf("Server Shutdown: %s", err)
+	cancel()
+
+	timeoutCtx, timeoutCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer timeoutCancel()
+	if err := srv.Shutdown(timeoutCtx); err != nil {
+		app.Logger.Errorf(ctx, "Server Shutdown: %s", err)
 	}
 
 	select {
 	case {{ "<" | Safe }}-ctx.Done():
-		app.Logger.Info("timeout of 5 seconds.")
+		app.Logger.Info(ctx, "timeout of 5 seconds.")
 	}
-	app.Logger.Info("Server exiting")
+	app.Logger.Info(ctx, "Server exiting")
 }
