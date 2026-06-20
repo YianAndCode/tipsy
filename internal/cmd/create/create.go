@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -15,7 +16,8 @@ import (
 
 // NewCreateCommand 创建 create 命令
 func NewCreateCommand() *cobra.Command {
-	return &cobra.Command{
+	var flat bool
+	cmd := &cobra.Command{
 		Use:   "create [project-name]",
 		Short: "Create a new Gin project",
 		Long: `Create a new Gin project with a standard directory structure and necessary files.
@@ -34,7 +36,14 @@ func NewCreateCommand() *cobra.Command {
 			}
 
 			// 创建项目目录
-			projectDir := filepath.Join(cwd, projectName)
+			var projectDir string
+			if flat {
+				projectDir = cwd
+			} else {
+				dirName := path.Base(projectName)
+				projectDir = filepath.Join(cwd, dirName)
+			}
+
 			if err := os.MkdirAll(projectDir, 0755); err != nil {
 				fmt.Printf("Error creating project directory: %v\n", err)
 				return
@@ -104,7 +113,16 @@ func NewCreateCommand() *cobra.Command {
 				fmt.Printf("Generated file: %s\n", targetPath)
 			}
 
-			fmt.Printf("\nProject %s created successfully!\nDon't forget to exec: \tcd %s && go mod tidy\n\tcd cmd/api && wire\n", projectName, projectName)
+			if flat {
+				fmt.Printf("\nProject %s created successfully!\nDon't forget to exec: \tgo mod tidy\n\tcd cmd/api && wire\n", projectName)
+			} else {
+				dirName := path.Base(projectName)
+				fmt.Printf("\nProject %s created successfully!\nDon't forget to exec: \tcd %s && go mod tidy\n\tcd cmd/api && wire\n", projectName, dirName)
+			}
 		},
 	}
+
+	cmd.Flags().BoolVarP(&flat, "flat", "f", false, "Create project skeleton in current directory directly instead of creating a subdirectory")
+	return cmd
 }
+
