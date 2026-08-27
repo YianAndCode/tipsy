@@ -10,7 +10,7 @@ type User struct {
 	LoginName string          `xorm:"varchar(32) not null unique(unq-login_name)"`  // 登录名
 	Password  string          `xorm:"varchar(255) not null"`                        // 密码
 	Nickname  string          `xorm:"varchar(16) not null"`                         // 昵称
-	Gender    datatype.Gender `xrom:"tinyint not null default(0)"`                  // 性别
+	Gender    datatype.Gender `xorm:"tinyint not null default(0)"`                  // 性别
 	Email     string          `xorm:"varchar(200) null"`                            // 邮箱
 	AvatarUrl string          `xorm:"varchar(256) null"`                            // 头像
 	Tz        string          `xorm:"varchar(64) not null default 'Asia/Shanghai'"` // 时区
